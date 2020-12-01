@@ -1,12 +1,14 @@
 package com.atguigu.gmall.pms.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
 import com.atguigu.core.bean.PageVo;
 import com.atguigu.core.bean.QueryCondition;
 import com.atguigu.core.bean.Resp;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,21 @@ import com.atguigu.gmall.pms.service.CategoryService;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    @GetMapping
+    public Resp<List<CategoryEntity>> queryCategoryByLevelOrPid(@RequestParam(value = "level",defaultValue = "0",required = false) Integer level,
+                                                                @RequestParam(value = "parentCid",required = false) Long parentCid){
+        QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
+
+        if (level != 0) {
+            queryWrapper.eq("cat_level",level);
+        }
+        if (parentCid != null) {
+            queryWrapper.eq("parent_cid",parentCid);
+        }
+        List<CategoryEntity> categoryEntities = categoryService.list(queryWrapper);
+        return Resp.ok(categoryEntities);
+    }
 
     /**
      * 列表
